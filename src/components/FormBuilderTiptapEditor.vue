@@ -2,18 +2,16 @@
   <div class="form-builder-vueTiptaKatex"
        :class="customClass">
     <p v-text="label" />
-    <!--    <vue-tiptap-katex-->
-    <!--      v-if="!disable && !readonly"-->
-    <!--      ref="tiptap"-->
-    <!--      v-model="inputData"-->
-    <!--      :name="name"-->
-    <!--      :bubble-menu="false"-->
-    <!--      :floating-menu="false"-->
-    <!--      :options="options"-->
-    <!--      :class="customClass"-->
-    <!--      @update:model-value="change($event)"-->
-    <!--      @click="onClick"-->
-    <!--    />-->
+    <!--    <vue-tiptap-katex v-if="!disable && !readonly"-->
+    <!--                      ref="tiptap"-->
+    <!--                      v-model="inputData"-->
+    <!--                      :name="name"-->
+    <!--                      :bubble-menu="false"-->
+    <!--                      :floating-menu="false"-->
+    <!--                      :options="options"-->
+    <!--                      :class="customClass"-->
+    <!--                      @update:model-value="change($event)"-->
+    <!--                      @click="onClick" />-->
     <q-editor v-if="!disable && !readonly"
               v-model="inputData"
               :class="customClass"
@@ -98,7 +96,7 @@
 </template>
 
 <script>
-// import VueTiptapKatex from 'vue3-tiptap-katex'
+// import { VueTiptapKatex } from 'vue3-tiptap-katex'
 import inputMixin from '../mixins/inputMixin.js'
 
 export default {
