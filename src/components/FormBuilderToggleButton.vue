@@ -28,14 +28,13 @@
                   :spread="spread"
                   :stack="stack"
                   :stretch="stretch"
-                  :class="{customClass, col}"
                   @update:model-value="change($event)"
                   @click="onClick" />
   </div>
 </template>
 
 <script>
-import { inputMixin } from '../../index.js'
+import inputMixin from '../mixins/inputMixin.js'
 export default {
   name: 'FormBuilderToggleButton',
   mixins: [inputMixin],

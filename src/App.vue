@@ -16,32 +16,44 @@
       </q-toolbar>
     </q-header>
     <q-page-container>
-      <form-builder-generator />
-      <q-btn color="blue"
-             class="q-my-md full-width"
-             @click="getData">
-        get data
-      </q-btn>
-      <q-btn color="orange"
-             class="q-my-md full-width"
-             @click="clearInputValues">clear inputs</q-btn>
-      <q-btn color="green"
-             class="q-my-md full-width"
-             @click="changeScreenDirection">change screen direction
-      </q-btn>
-      <q-btn color="red"
-             class="q-my-md full-width"
-             @click="loading=!loading">loading</q-btn>
-      <q-btn @click="mockDataDatePickers()">mock value for date pickers</q-btn>
-      <br>
-      <q-checkbox v-model="readonly"
-                  label="readonly" />
-      <q-checkbox v-model="disable"
-                  label="disable" />
-      <br>
-      <br>
-      <br>
-      <div>test v-model data from first input: {{ inputs[0].value }}</div>
+      <generator-panel />
+      <div class="row">
+        <div class="col-md-3 col-12">
+          <q-btn color="blue"
+                 class="full-width"
+                 @click="getData">
+            get data
+          </q-btn>
+        </div>
+        <div class="col-md-3 col-12">
+          <q-btn color="orange"
+                 class="full-width"
+                 @click="clearInputValues">clear inputs</q-btn>
+        </div>
+        <div class="col-md-3 col-12">
+          <q-btn color="green"
+                 class="full-width"
+                 @click="changeScreenDirection">change screen direction
+          </q-btn>
+        </div>
+        <div class="col-md-3 col-12">
+          <q-btn color="red"
+                 class="full-width"
+                 @click="loading=!loading">loading</q-btn>
+        </div>
+        <div class="col-md-3 col-12">
+          <q-btn class="full-width"
+                 @click="mockDataDatePickers()">mock value for date pickers</q-btn>
+        </div>
+        <div class="col-md-3 col-12">
+          <q-checkbox v-model="readonly"
+                      label="readonly" />
+        </div>
+        <div class="col-md-3 col-12">
+          <q-checkbox v-model="disable"
+                      label="disable" />
+        </div>
+      </div>
       <div class="form-builder q-pa-md q-mx-sm">
         <form-builder ref="formBuilder"
                       v-model:value="inputs"
@@ -50,21 +62,26 @@
                       :disable="disable"
                       :loading="loading"
                       @onClick="onClick"
-                      @keydown="onKePress" />
+                      @keydown="onKeyPress" />
       </div>
     </q-page-container>
   </q-layout>
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, shallowRef } from 'vue'
 import FormBuilder from './FormBuilder.vue'
 import CustomComponent from './CustomComponent.vue'
-import FormBuilderGenerator from './components/formBuilderGenerator.vue'
+import GeneratorPanel from './components/GeneratorPanel/GeneratorPanel.vue'
+
+const CustomComponentInput = shallowRef(CustomComponent)
 
 export default {
   name: 'LayoutDefault',
-  components: { FormBuilder, FormBuilderGenerator },
+  components: {
+    FormBuilder,
+    GeneratorPanel
+  },
   setup() {
     return {
       leftDrawerOpen: ref(false)
@@ -77,6 +94,13 @@ export default {
       dir: 'ltr',
       loading: false,
       inputs: [
+        {
+          type: 'file',
+          capture: 'user',
+          accept: 'image/*',
+          label: 'just capture',
+          col: 'col-12'
+        },
         {
           type: 'submit',
           label: 'submit btn',
@@ -127,9 +151,9 @@ export default {
           col: 'col-md-12'
         },
         {
-          type: 'toggleButton',
-          name: 'id',
-          label: 'toggleButton',
+          type: 'ToggleButton',
+          name: 'sample-toggle-button',
+          label: 'ToggleButton',
           options: [
             {
               label: 'tab1',
@@ -144,10 +168,10 @@ export default {
               value: '3'
             }
           ],
-          col: 'col-md-3',
+          col: 'col-md-3 col-12',
+          size: 'md',
           color: 'red',
-          textColor: 'black',
-          size: '20px'
+          textColor: 'black'
         },
         {
           type: 'optionGroup',
@@ -227,7 +251,7 @@ export default {
           col: 'col-md-12'
         },
         {
-          type: CustomComponent,
+          type: CustomComponentInput,
           props: { name: 'ali' },
           name: 'ali',
           value: 123,
@@ -235,7 +259,7 @@ export default {
           col: 'col-md-6'
         },
         {
-          type: CustomComponent,
+          type: CustomComponentInput,
           props: { name: 'mostafa' },
           name: 'mostafa',
           value: 456,
@@ -656,7 +680,7 @@ export default {
       // eslint-disable-next-line
       console.log('data', data)
     },
-    onKePress(data) {
+    onKeyPress(data) {
       // eslint-disable-next-line
       console.log('key press', data)
     },

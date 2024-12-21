@@ -2,7 +2,8 @@
   <div class="form-builder-select"
        :class="customClass">
     <div class="outsideLabel">{{ placeholder ? label : null }}</div>
-    <q-select v-model="inputData"
+    <q-select ref="input"
+              v-model="inputData"
               transition-show="jump-down"
               transition-hide="jump-up"
               :name="name"
@@ -10,6 +11,8 @@
               :behavior="behavior"
               :rounded="rounded"
               :outlined="outlined"
+              :error="error"
+              :error-message="errorMessage"
               :option-value="optionValue"
               :option-label="optionLabel"
               :option-disable="optionDisable"
@@ -34,13 +37,14 @@
               :hide-dropdown-icon="hideDropdownIcon"
               :dropdown-icon="dropdownIcon"
               map-options
-              clearable
+              :clearable="clearable"
               @update:model-value="change($event)"
               @new-value="createValue"
               @filter="filterFn"
               @click="onClick">
       <template #no-option>
-        <q-item v-show="showNoOption">
+        <q-item v-if="!createNewValue"
+                v-show="showNoOption">
           <q-item-section class="text-grey"> موردی یافت نشد </q-item-section>
         </q-item>
       </template>
@@ -72,10 +76,14 @@ export default {
     },
     newValueMode: {
       default: undefined,
-      type: String,
-      validator(value) {
-        return ['add' | 'add-unique' | 'toggle' | undefined].includes(value)
-      }
+      type: String
+      // validator(value) {
+      //   return ['add' | 'add-unique' | 'toggle' | undefined].includes(value)
+      // }
+    },
+    clearable: {
+      default: true,
+      type: Boolean
     },
     hideDropdownIcon: {
       default: false,
@@ -100,6 +108,11 @@ export default {
     outlined: {
       default: false,
       type: Boolean
+    },
+    onChangeValue: {
+      default: (newValue, oldValue) => {
+      },
+      type: Function
     }
   },
   data() {
@@ -132,10 +145,22 @@ export default {
       return ''
     }
   },
+  watch: {
+    inputData(newValue, oldValue) {
+      this.onChangeValue(newValue, oldValue)
+    },
+    options: {
+      handler(newValue) {
+        this.filteredOptions = newValue
+      },
+      immediate: true,
+      deep: true
+    }
+  },
   methods: {
     filterFn(val, update) {
       const isObjectList =
-        this.options.length > 0 && typeof this.options[0] === 'object'
+          this.options.length > 0 && typeof this.options[0] === 'object'
 
       if (val === '') {
         update(() => {

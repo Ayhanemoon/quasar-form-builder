@@ -1,10 +1,13 @@
 <template>
   <div class="form-builder-checkbox"
        :class="customClass">
-    <q-checkbox v-model="inputData"
+    <q-checkbox ref="input"
+                v-model="inputData"
                 :name="name"
                 :color="color"
                 :label="label"
+                :error="error"
+                :error-message="errorMessage"
                 :true-value="trueValue"
                 :false-value="falseValue"
                 :disable="disable || readonly"
