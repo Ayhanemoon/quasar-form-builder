@@ -4,6 +4,7 @@
        :class="customClass">
     <p v-text="label" />
     <q-editor v-if="!disable && !readonly"
+              ref="input"
               v-model="inputData"
               :class="customClass"
               :content-class="customClass"
@@ -104,13 +105,13 @@ export default {
   },
   watch: {
     value(newValue) {
-      if (newValue === false) {
+      if (!newValue) {
         this.inputData = ''
       }
     }
   },
   created() {
-    if (this.inputData === false) {
+    if (!this.inputData) {
       this.inputData = ''
     }
   }

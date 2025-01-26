@@ -10,6 +10,14 @@ export default {
       default: '',
       type: String
     },
+    error: {
+      default: false,
+      type: Boolean
+    },
+    errorMessage: {
+      default: '',
+      type: String
+    },
     disable: {
       default: false,
       type: Boolean
@@ -223,19 +231,29 @@ export default {
     getFormData() {
       const formHasFileInput = this.formHasFileInput()
       const formData = formHasFileInput ? new FormData() : {}
-      const inputs = this.getValues().filter(item => !item.disable && !item.ignoreValue && typeof item.value !== 'undefined')
+      const inputs = this.getValues().filter(item => !item.ignoreValue)
       inputs.forEach((item) => {
-        if (item.type.toString().toLowerCase() === 'file' && !this.isFile(item.value)) {
+        if (
+          item.type.toString().toLowerCase() === 'file' &&
+            (
+              (!this.isFile(item.value) && !item.sendNull) ||
+                (!this.isFile(item.value) && item.sendNull && item.value !== null)
+            )
+        ) {
           return
         }
 
         if (formHasFileInput) {
           if (Array.isArray(item.value)) {
             item.value.forEach(arrayValue => {
-              formData.append(item.name + '[]', arrayValue)
+              if (arrayValue !== null && typeof arrayValue !== 'undefined') {
+                formData.append(item.name + '[]', arrayValue)
+              }
             })
           } else {
-            formData.append(item.name, item.value)
+            if (item.value !== null && typeof item.value !== 'undefined') {
+              formData.append(item.name, item.value)
+            }
           }
         } else {
           shvl.set(formData, item.name, item.value)
@@ -245,8 +263,8 @@ export default {
       return formData
     },
     formHasFileInput() {
-      const inputs = this.getValues().filter(item => !item.disable && !item.ignoreValue && typeof item.value !== 'undefined' && item.value !== null)
-      const target = inputs.find((item) => item.type === 'file' && this.isFile(item.value))
+      const inputs = this.getValues().filter(item => !item.ignoreValue && typeof item.value !== 'undefined' && item.value !== null)
+      const target = inputs.find((item) => item.type === 'file' || this.isFile(item.value))
       return !!target
     },
     isFile(file) {

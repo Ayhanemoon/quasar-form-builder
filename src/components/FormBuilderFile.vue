@@ -3,6 +3,7 @@
        :class="customClass">
     <div class="outsideLabel">{{ placeholder ? label : null }}</div>
     <q-file :id="inputUid"
+            ref="input"
             v-model="file"
             :name="name"
             :label="placeholder ? null : label"
@@ -10,6 +11,10 @@
             :placeholder="placeholder"
             :disable="disable"
             :filled="filled"
+            :capture="capture"
+            :error="error"
+            :error-message="errorMessage"
+            :accept="accept"
             :readonly="readonly"
             :loading="loading"
             clearable
@@ -22,26 +27,33 @@
 
             @clear="onClearInputFile"
             @click="onClick" />
-    <label :for="inputUid">
+    <label :for="inputUid"
+           class="cursor-pointer"
+           @click="downloadFile()">
       <q-img v-if="previewMode === 'photo'"
              :src="imageSource"
              placeholder-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWBAMAAADOL2zRAAAAG1BMVEXMzMyWlpaqqqq3t7fFxcW+vr6xsbGjo6OcnJyLKnDGAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABAElEQVRoge3SMW+DMBiE4YsxJqMJtHOTITPeOsLQnaodGImEUMZEkZhRUqn92f0MaTubtfeMh/QGHANEREREREREREREtIJJ0xbH299kp8l8FaGtLdTQ19HjofxZlJ0m1+eBKZcikd9PWtXC5DoDotRO04B9YOvFIXmXLy2jEbiqE6Df7DTleA5socLqvEFVxtJyrpZFWz/pHM2CVte0lS8g2eDe6prOyqPglhzROL+Xye4tmT4WvRcQ2/m81p+/rdguOi8Hc5L/8Qk4vhZzy08DduGt9eVQyP2qoTM1zi0/uf4hvBWf5c77e69Gf798y08L7j0RERERERERERH9P99ZpSVRivB/rgAAAABJRU5ErkJggg=="
+             class="cursor-pointer"
              :class="customClass" />
       <q-icon v-if="previewMode === 'audio'"
               size="2rem"
               name="audiotrack"
+              class="cursor-pointer"
               :class="customClass" />
       <q-icon v-if="previewMode === 'pdf'"
               size="100px"
               name="picture_as_pdf"
+              class="cursor-pointer"
               :class="customClass" />
       <q-icon v-if="previewMode === 'office/word'"
               size="100px"
               name="description"
+              class="cursor-pointer"
               :class="customClass" />
       <q-icon v-if="previewMode === 'office/excel'"
               size="100px"
               name="table_view"
+              class="cursor-pointer"
               :class="customClass" />
     </label>
     <div v-if="caption"
@@ -51,7 +63,7 @@
 
 <script>
 import { uid } from 'quasar'
-import inputMixin from '../mixins/inputMixin.js'
+import { inputMixin } from 'quasar-form-builder'
 
 export default {
   name: 'FormBuilderFile',
@@ -67,6 +79,18 @@ export default {
     },
     caption: {
       default: null,
+      type: String
+    },
+    capture: {
+      default: undefined,
+      type: String
+    },
+    sendNull: {
+      default: false,
+      type: Boolean
+    },
+    accept: {
+      default: undefined,
       type: String
     }
   },
@@ -106,6 +130,10 @@ export default {
       if (this.isFile(newValue)) {
         this.file = newValue
       }
+      if (newValue === null && this.sendNull) {
+        this.url = null
+        this.file = newValue
+      }
     },
     inputData(newValue) {
       if (this.isValidURL(newValue) && this.getSourceExtension(newValue) === 'photo') {
@@ -124,6 +152,9 @@ export default {
     this.inputUid = this.getUid()
   },
   methods: {
+    downloadFile () {
+      window.open(this.value, '_blank')
+    },
     onClearInputFile() {
       // this.inputData = this.url
     },
@@ -141,10 +172,10 @@ export default {
         return false
       }
       const photoExtensions = /\.(jpeg|jpg|gif|png)$/,
-        audioExtensions = /\.(mp3|ogg)$/,
-        officeWordExtensions = /\.(doc|docx)$/,
-        officeExcelExtensions = /\.(xls|xlsx)$/,
-        pdfExtensions = /\.(pdf)$/
+          audioExtensions = /\.(mp3|ogg)$/,
+          officeWordExtensions = /\.(doc|docx)$/,
+          officeExcelExtensions = /\.(xls|xlsx)$/,
+          pdfExtensions = /\.(pdf|PDF)$/
 
       if (filePath.match(photoExtensions) != null) {
         return 'photo'

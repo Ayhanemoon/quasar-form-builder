@@ -2,7 +2,8 @@
   <div class="form-builder-input"
        :class="customClass">
     <div class="outsideLabel">{{ placeholder ? label : null }}</div>
-    <q-input v-model="inputData"
+    <q-input ref="input"
+             v-model="inputData"
              :name="name"
              :filled="filled"
              :rules="rules"
@@ -10,7 +11,13 @@
              :label="placeholder ? null : label"
              :stack-label="!!placeholder"
              :type="inputType"
+             :error="error"
+             :hint="hint"
+             :error-message="errorMessage"
              :disable="disable"
+             :mask="mask"
+             :fill-mask="fillMask"
+             :reverse-fill-mask="reverseFillMask"
              :clearable="clearable"
              :loading="loading"
              :readonly="readonly"
@@ -20,6 +27,7 @@
              :class="customClass"
              :input-class="customClass"
              :autogrow="autogrow"
+             :maxlength="maxlength"
              @update:model-value="change($event)"
              @click="onClick"
              @keypress="onKeyPress" />
@@ -28,6 +36,7 @@
 
 <script>
 import inputMixin from '../mixins/inputMixin.js'
+
 export default {
   name: 'FormBuilderInput',
   mixins: [inputMixin],
@@ -39,6 +48,49 @@ export default {
     autogrow: {
       type: Boolean,
       default: false
+    },
+    preventPersian: {
+      type: Boolean,
+      default: false
+    },
+    preventEnglish: {
+      type: Boolean,
+      default: false
+    },
+    justNumber: {
+      type: Boolean,
+      default: false
+    },
+    mask: {
+      type: String,
+      default: undefined
+    },
+    fillMask: {
+      type: String,
+      default: undefined
+    },
+    reverseFillMask: {
+      type: Boolean,
+      default: undefined
+    },
+    inputType: {
+      type: String,
+      default: 'text',
+      validator: (value) => {
+        return [
+          'text', 'password', 'textarea', 'email',
+          'search', 'tel', 'file', 'number',
+          'url', 'time', 'date', 'datetime-local'
+        ].includes(value)
+      }
+    },
+    maxlength: {
+      type: [String, Number],
+      default: undefined
+    },
+    hint: {
+      type: String,
+      default: undefined
     },
     value: {
       default: '',
